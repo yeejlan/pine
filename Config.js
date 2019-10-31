@@ -19,6 +19,20 @@ class Config {
 			return {};
 		}
 	}
+
+	async parseAsync() {
+		return new Promise((resolve, reject) => {
+			fs.readFile(this.configFile, 'utf8', (err, data) => {
+				if(err) {
+					let func = {func: "pine.Config.parseAsync"}
+					log.error(func, "Config parse error: %s", err);
+					resolve({});
+				}else{
+					resolve(ini.parse(data));
+				}
+			})
+		})
+	}
 }
 
 exports.Config = Config;
