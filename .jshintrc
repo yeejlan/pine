@@ -1,0 +1,8 @@
+{
+  "undef": true,
+  "unused": false,
+  "node": true,
+  "asi": true,
+  "strict": true,
+  "esversion": 8
+}

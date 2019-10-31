@@ -1,0 +1,22 @@
+{
+  "name": "pine",
+  "version": "1.0.0",
+  "description": "yet another node web framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "hint": "jshint ."
+  },
+  "keywords": [
+    "node",
+    "web",
+    "framework"
+  ],
+  "author": "louis yu",
+  "license": "ISC",
+  "dependencies": {
+    "ini": "^1.3.5",
+    "pino": "^5.13.5"
+  }
+}
