@@ -28,6 +28,7 @@ class App {
 		this._configFile = '';
 		this._config = null;
 		this._appName = '';
+		this._storage = {};
 	}
 
 	init(envStr, appName) {
@@ -73,6 +74,22 @@ class App {
 			log.error(`App init error, env: ${this._envString}, config: ${this._configFile}`);
 			process.exit(1);
 		}
+	}
+
+	set(key, value){
+		this._storage[key] = value;
+	}
+
+	get(key) {
+		return this._storage[key];
+	}
+
+	delete(key) {
+		delete this._storage[key];
+	}
+
+	getRegistry() {
+		return this._storage;
 	}
 }
 
