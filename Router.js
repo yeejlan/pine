@@ -3,6 +3,7 @@
 const url = require('url');
 const querystring = require('querystring');
 const log = require('pino')()
+const {WebContext} = require('./WebContext');
 
 class Router {
 	constructor(app) {
@@ -79,14 +80,11 @@ class Router {
 			}
 		}
 
-		let ctx = {
-			app: this._app,
-			request: request,
-			response: response,
-			controller: controller,
-			action: action,
-			params: params
-		}
+		let ctx = new WebContext(this._app, request, response);
+		ctx.params = params;
+		ctx.controller = controller;
+		ctx.action = action;
+
 		this.callAction(ctx, controller, action);
 	}
 
