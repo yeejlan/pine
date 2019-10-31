@@ -29,6 +29,7 @@ class App {
 		this._config = null;
 		this._appName = '';
 		this._storage = {};
+		this._shutdownHook = [];
 	}
 
 	init(envStr, appName) {
@@ -90,6 +91,23 @@ class App {
 
 	getRegistry() {
 		return this._storage;
+	}
+
+	addShutdownHook(func){
+		this._shutdownHook.push(func)
+	}
+
+	shutdown() {
+		let len = this._shutdownHook.length
+		for(let i = len-1; i>=0; i--) {
+			let func = this._shutdownHook[i];
+			try{
+				func()
+			}catch(e){
+				//pass
+			}
+		}
+		log.info(`App[${this._appName}] shutdown with ${len} hook[s] processed`);
 	}
 }
 

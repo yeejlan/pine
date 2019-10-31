@@ -12,6 +12,10 @@ class ResourceLoader {
 		this._envString = this._app.getEnvString();
 	}
 
+	async autoload() {
+		await this._loadRedis();
+	}
+
 	async loadRedis(config, configName) {
 		let opt = {
 			host: config[`${configName}.host`],
@@ -22,6 +26,7 @@ class ResourceLoader {
 		let database = config[`${configName}.database`] || 0
 		await selectAsync(database);
 		this._app.set(configName, client);
+		this._app.addShutdownHook(() => {client.quit()});
 	}
 
 	async _loadRedis(){
