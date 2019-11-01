@@ -7,13 +7,14 @@ class Cache {
 	constructor(app) {
 		this._app = app;
 		this._redisProvider = app.getConfig()['cache.storage.provider'];
-		this._cacheEnable = app.getConfig()['cache.enable'] == "true";
+		this._cacheEnable = app.getConfig()['cache.enable'];
 		let client = app.get(this._redisProvider);
 		this._redis = client;
 		if(!this._redis) {
 			let func = {func: 'pine.Cache.constructor'};
 			log.warn(func, "Can not found redis provider: %s, cache disabled.", this._redisProvider);
 			this._cacheEnable = false;
+			return;
 		}
 		this._cachePrefix = app.getConfig()['cache.prefix'];
 		this._cacheExpireSeconds = parseInt(app.getConfig()['cache.expire.seconds']) || 3600;
@@ -41,6 +42,9 @@ class Cache {
 	}
 
 	async getString(key) {
+		if(!this._cacheEnable) {
+			return '';
+		}
 		return await this.getAsync(this._cachePrefix + key);
 	}
 
