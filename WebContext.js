@@ -12,7 +12,7 @@ class WebContext {
 		this._sessionName = app.getConfig()['session.name'];
 		this._cookieDomain = app.getConfig()['cookie.domain'];
 		this._sessionExpire = parseInt(app.getConfig()['session.expire.seconds']) || 3600;
-		this._sessionEnable = app.getConfig()['session.enable'];
+		this._sessionEnable = app.getConfig()['session.enable'] == "true";
 	}
 }
 

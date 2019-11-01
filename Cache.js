@@ -35,8 +35,27 @@ class Cache {
 		});
 	}
 
+	async setObj(key, value, expireSeconds) {
+		let obj = JSON.stringify(value);
+		return await this.set(key, value, expireSeconds);
+	}
+
 	async get(key) {
 		return await this.getAsync(this._cachePrefix + key);
+	}
+
+	async getObj(key) {
+		let value = await this.get(key);
+		try{
+			return JSON.parse(value);
+		}catch(e){
+			return null;
+		}
+	}
+
+	async getInt(key) {
+		let value = await this.get(key);
+		return parseInt(value) || 0;
 	}
 
 	async delete(key) {
