@@ -10,7 +10,7 @@ class Server {
 
 	serve(port) {
 		let router = this.router;
-		let p = port || 8080;
+		port = port || 8080;
 		let server = http.createServer(function(request, response) {
 			router.dispatch(request, response);
 		});
