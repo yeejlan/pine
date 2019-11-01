@@ -3,17 +3,19 @@
 const redis = require("redis");
 const {promisify} = require('util');
 const {Config} = require('./Config');
+const {SessionStorageRedis} = require('./SessionStorageRedis');
 const log = require('pino')()
 
 class ResourceLoader {
 	constructor(app) {
 		this._app = app;
-		this._sessionEnabled = this._app.getConfig['session.enable'];
+		this._sessionEnable = this._app.getConfig()['session.enable'];
 		this._envString = this._app.getEnvString();
 	}
 
 	async autoload() {
 		await this._loadRedis();
+		await this._loadSessionStorage();
 	}
 
 	async loadRedis(config, configName) {
@@ -48,6 +50,30 @@ class ResourceLoader {
 					await this.loadRedis(config, redisName);
 				}
 			}
+		}
+	}
+
+	async _loadSessionStorage() {
+		let configName = "session.storage";
+		let storageName = this._app.getConfig()[configName];
+
+		if(!this._sessionEnable) {
+			log.info("Session is NOT enabled.");
+			return;
+		}
+		if(!storageName){
+			log.warn(`App config["${configName}"] not found, fallback to "redis"`);
+			storageName = "redis";
+		}
+		let storageSupported = ['redis'];
+		if(!(storageSupported.indexOf(storageName) > -1)) {
+			log.warn(`Session storage not supported: "${storageName}", session disabled`);
+			return;
+		}
+		switch(storageName) {
+			case "redis":
+				this._app.set("session.storage", new SessionStorageRedis(this._app));
+				break;
 		}
 	}
 }

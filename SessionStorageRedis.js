@@ -7,7 +7,7 @@ class SessionStorageRedis {
 	constructor(app) {
 		this._app = app;
 		this._sessionExpire = parseInt(app.getConfig()['session.expire.seconds']) || 3600;
-		this._storageProvider = app.getConfig['session.storage.provider'];
+		this._storageProvider = app.getConfig()['session.storage.provider'];
 
 		let client = app.get(this._storageProvider);
 		this._redis = client;
@@ -30,6 +30,9 @@ class SessionStorageRedis {
 	}
 
 	async save(sessionId, data) {
+		if(!this._storageEnable){
+			return '';
+		}
 		let expireSeconds = expireSeconds || this._sessionExpire;
 		return new Promise((resolve, reject) => {
 			this._redis.set(sessionId, data, 'EX', expireSeconds, (err, replies) => {

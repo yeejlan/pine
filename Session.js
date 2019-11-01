@@ -6,8 +6,16 @@ class Session {
 		this._sessionEnable = app.getConfig()['session.enable'];
 		this._map = {};
 		this._changed = false;
-		this._sessionid = null;
-		this._sessionStorage = null;
+		this._sessionId = null;
+		this._sessionStorage = app.get("session.storage");
+	}
+
+	setSessionId(sessionId) {
+		this._sessionId = sessionId;
+	}
+
+	getSessionId() {
+		return this._sessionId;
 	}
 
 	set(key, value) {
@@ -28,14 +36,14 @@ class Session {
 		this.changed();
 	}
 
-	destroy() {
+	async destroy() {
 		this.changed();
 		this._map = {};
-		this.save()
+		await this.save();
 	}
 
-	load() {
-		if(!this._sessionid){
+	async load() {
+		if(!this._sessionId){
 			return;
 		}
 
@@ -44,13 +52,13 @@ class Session {
 		}
 	}
 
-	save() {
+	async save() {
 		if(!this._changed) {
 			return;
 		}
 
 		this._changed = false;
-		if(!this._sessionid) {
+		if(!this._sessionId) {
 			return;
 		}
 	}
