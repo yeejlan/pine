@@ -26,7 +26,7 @@ class Cache {
 		return this._redis;
 	}
 
-	async set(key, value, expireSeconds) {
+	async setString(key, value, expireSeconds) {
 		expireSeconds = expireSeconds || this._cacheExpireSeconds;
 		return new Promise((resolve, reject) => {
 			this._redis.set(this._cachePrefix + key, value, 'EX', expireSeconds, (err, replies) => {
@@ -35,27 +35,22 @@ class Cache {
 		});
 	}
 
-	async setObj(key, value, expireSeconds) {
-		let obj = JSON.stringify(value);
-		return await this.set(key, value, expireSeconds);
+	async set(key, value, expireSeconds) {
+		let objStr = JSON.stringify(value);
+		return await this.setString(key, objStr, expireSeconds);
 	}
 
-	async get(key) {
+	async getString(key) {
 		return await this.getAsync(this._cachePrefix + key);
 	}
 
-	async getObj(key) {
-		let value = await this.get(key);
+	async get(key) {
+		let value = await this.getString(key);
 		try{
 			return JSON.parse(value);
 		}catch(e){
 			return null;
 		}
-	}
-
-	async getInt(key) {
-		let value = await this.get(key);
-		return parseInt(value) || 0;
 	}
 
 	async delete(key) {
