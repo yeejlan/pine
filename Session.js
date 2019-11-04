@@ -47,9 +47,15 @@ class Session {
 			return;
 		}
 
-		if(sessionEnable && this._sessionStorage) {
-			//
+		if(this._sessionEnable && this._sessionStorage) {
+			let valueStr = await this._sessionStorage.load(this._sessionId);
+			try{
+				this._map = JSON.parse(valueStr);
+			}catch(e){
+				return;
+			}
 		}
+		return;
 	}
 
 	async save() {
@@ -61,13 +67,18 @@ class Session {
 		if(!this._sessionId) {
 			return;
 		}
+
+		if(this._sessionEnable && this._sessionStorage) {
+			let valueStr =  JSON.stringify(this._map);
+			await this._sessionStorage.save(this._sessionId, valueStr);
+		}
 	}
 
 	changed() {
 		this._changed = true;
 	}
 
-	getMap() {
+	getStorage() {
 		return this._map;
 	}
 }

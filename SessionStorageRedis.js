@@ -33,7 +33,7 @@ class SessionStorageRedis {
 		if(!this._storageEnable){
 			return '';
 		}
-		let expireSeconds = expireSeconds || this._sessionExpire;
+		let expireSeconds = this._sessionExpire;
 		return new Promise((resolve, reject) => {
 			this._redis.set(sessionId, data, 'EX', expireSeconds, (err, replies) => {
 				resolve(replies);

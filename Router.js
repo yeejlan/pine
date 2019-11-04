@@ -29,7 +29,7 @@ class Router {
 		let params = querystring.parse(parsedUrl.query);
 		let requestUri = parsedUrl.pathname;
 		let uri = requestUri.replace(/^\//,'').replace(/\/$/,'');
-		uri = uri.trim('/').toLowerCase();
+		uri = uri.trim('/');
 
 		let routeMatched = false;
 		let controller = "";
@@ -107,8 +107,10 @@ class Router {
 			return;
 		}
 		try{
+			await ctx.loadSession();
 			instance.ctx = ctx;
 			let out = await instance[actionStr]();
+			await ctx.session.save();
 			this._end(ctx, out);
 			return;
 		}catch(e){
