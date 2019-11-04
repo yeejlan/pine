@@ -55,6 +55,9 @@ class ResourceLoader {
 			port: config[`${configName}.port`]
 		};
 		let client = redis.createClient(opt);
+		client.on("error", function (err) {
+			log.error("Redis error: %s", err);
+		});
 		let selectAsync = promisify(client.select).bind(client);
 		let database = config[`${configName}.database`] || 0
 		await selectAsync(database);
