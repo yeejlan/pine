@@ -1,6 +1,7 @@
 "use strict";
 
 const {Config} = require('./Config');
+const {ResourceLoader} = require('./ResourceLoader');
 const log = require('pino')();
 const fs = require('fs');
 
@@ -32,7 +33,7 @@ class App {
 		this._shutdownHook = [];
 	}
 
-	init(envStr, appName) {
+	async init(envStr, appName) {
 		this._appName = appName;
 		this._env = this.strEnvMapping[envStr] || this.PRODUCTION;
 		this._envString = this.envStrMapping[this._env];
@@ -47,6 +48,9 @@ class App {
 
 		log.info(`App[${appName}] starting with env=${this._envString}, config=${this._configFile}, working_dir = ` + process.cwd());
 		this._isInit = true;
+
+		let resourceLoader = new ResourceLoader(this);
+		await resourceLoader.autoload();
 	}
 
 	getEnv() {
