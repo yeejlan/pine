@@ -1,6 +1,7 @@
 "use strict";
 
 const redis = require("redis");
+const {Mysql} = require("./Mysql");
 const {promisify} = require('util');
 const {Config} = require('./Config');
 const {SessionStorageRedis} = require('./SessionStorageRedis');
@@ -14,8 +15,38 @@ class ResourceLoader {
 	}
 
 	async autoload() {
+		await this._loadDatabase();
 		await this._loadRedis();
 		await this._loadSessionStorage();
+	}
+
+	async _loadDatabase(){
+		let configFile = `config/${this._envString}/db.ini`;
+		let config = null;
+		try{
+			config = new Config(configFile).parse();
+		}catch(e){
+			let func = {func: "pine.ResourceLoader._loadDatabase"}
+			log.warn(func, "Config parse error: %s", e);
+			return
+		}
+		let configMatcher = /^mysql\.([_a-zA-Z0-9]+)\.url/
+		for(let key in config){
+			if(configMatcher.test(key)){
+				let redisName = key.substring(0, key.length - ".url".length);
+				let autoloadKey = `${redisName}.autoload`;
+				if(config[autoloadKey]){
+					await this.loadDatabase(config, redisName);
+				}
+			}
+		}
+	}
+
+	async loadDatabase(config, configName) {
+		let url = config[`${configName}.url`];
+		let client = new Mysql(url);
+		this._app.set(configName, client);
+		this._app.addShutdownHook(() => {client.close()});
 	}
 
 	async loadRedis(config, configName) {
