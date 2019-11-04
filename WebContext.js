@@ -1,8 +1,11 @@
 "use strict";
 
-const Cookies = require('cookies')
-const {Session} = require('./Session')
+const Cookies = require('cookies');
+const {Session} = require('./Session');
 const uuidv4 = require('uuid/v4');
+const log = require('pino')();
+const ejs = require('ejs');
+const path = require('path');
 
 class WebContext {
 	constructor(app, request, response) {
@@ -45,6 +48,30 @@ class WebContext {
 
 	async flushSession() {
 		await this.session.save();
+	}
+
+	async render(filename, data) {
+		let tplbase = 'templates';
+		let options = {
+			cache: true,
+			client: false,
+			async: true,
+			root: tplbase
+		}
+		if(this.app.getEnv() == this.app.DEVELOPMENT) {
+			options.cache = false;
+		}
+		let fullname = path.join(tplbase, `${filename}.ejs`)
+		return new Promise((resolve, reject) => {
+			ejs.renderFile(fullname, data, options, function(err, str){
+				if(err) {
+					let func = {func: "pine.WebContext.render"}
+					log.error(func, "renderFile error: %s", err);
+					resolve('');
+				}
+				resolve(str);
+			});
+		});
 	}
 }
 
