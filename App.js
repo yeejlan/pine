@@ -89,7 +89,7 @@ class App {
 		delete this._storage[key];
 	}
 
-	getRegistry() {
+	getStorage() {
 		return this._storage;
 	}
 
