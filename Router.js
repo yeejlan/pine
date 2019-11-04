@@ -24,7 +24,7 @@ class Router {
 		this._routers.push(rule);
 	}
 
-	dispatch(request, response) {
+	async dispatch(request, response) {
 		let parsedUrl = url.parse(request.url, '');
 		let params = querystring.parse(parsedUrl.query);
 		let requestUri = parsedUrl.pathname;
@@ -36,7 +36,10 @@ class Router {
 		let action = "";
 
 		if(this._app.getEnv() > this._app.PRODUCTION) {
-			//_serveStaticFile
+			let staticFileFound = await this._serveStaticFile(request, response);
+			if(staticFileFound){
+				return;
+			}
 		}
 
 		//check rewrite rules
@@ -109,6 +112,10 @@ class Router {
 		try{
 			await ctx.loadSession();
 			instance.ctx = ctx;
+			let before = instance['before'];
+			if(before) {
+				await instance['before']();
+			}
 			let out = await instance[actionStr]();
 			await ctx.session.save();
 			this._end(ctx, out);
@@ -196,6 +203,9 @@ class Router {
 		ctx.response.end(body);
 	}
 
+	async _serveStaticFile(request, response) {
+
+	}
 }
 
 exports.Router = Router;
