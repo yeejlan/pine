@@ -2,6 +2,8 @@
 
 const url = require('url');
 const querystring = require('querystring');
+const path = require('path');
+const fs = require('fs');
 const log = require('pino')()
 const {WebContext} = require('./WebContext');
 
@@ -29,7 +31,6 @@ class Router {
 		let params = querystring.parse(parsedUrl.query);
 		let requestUri = parsedUrl.pathname;
 		let uri = requestUri.replace(/^\//,'').replace(/\/$/,'');
-		uri = uri.trim('/');
 
 		let routeMatched = false;
 		let controller = "";
@@ -50,7 +51,7 @@ class Router {
 			}
 			//route matched
 			let rewriteToArr = rewrite.rewriteTo.split('/');
-			if(rewriteToArr.size == 2){
+			if(rewriteToArr.length == 2){
 				controller = rewriteToArr[0];
 				action = rewriteToArr[1];
 			}
@@ -87,7 +88,6 @@ class Router {
 		ctx.params = params;
 		ctx.controller = controller;
 		ctx.action = action;
-
 		this.callAction(ctx, controller, action);
 	}
 
@@ -204,7 +204,25 @@ class Router {
 	}
 
 	async _serveStaticFile(request, response) {
+		let fileNotFound = false;
 
+		let BASEPATH = "public"
+		let parsedUrl = url.parse(request.url, '');
+		let uri = parsedUrl.pathname;
+		let fileLoc = path.join(BASEPATH, uri);
+
+		return new Promise((resolve, reject) => {
+			fs.readFile(fileLoc, function(err, data) {
+				if (err) {
+					resolve(fileNotFound);
+				}else{
+					response.statusCode = 200;
+					response.write(data);
+					response.end();
+					resolve(true);
+				}
+			});
+		});
 	}
 }
 
