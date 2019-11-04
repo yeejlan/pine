@@ -36,7 +36,7 @@ class Router {
 		let controller = "";
 		let action = "";
 
-		if(this._app.getEnv() > this._app.PRODUCTION) {
+		if(this._app.getEnv() == this._app.DEVELOPMENT) {
 			let staticFileFound = await this._serveStaticFile(request, response);
 			if(staticFileFound){
 				return;
