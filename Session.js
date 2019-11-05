@@ -51,6 +51,9 @@ class Session {
 			let valueStr = await this._sessionStorage.load(this._sessionId);
 			try{
 				this._map = JSON.parse(valueStr);
+				if(this._map == null) {
+					this._map = {};
+				}
 			}catch(e){
 				return;
 			}
