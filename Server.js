@@ -17,16 +17,13 @@ class Server {
 		});
 
 		let app = this.app;
-		let shutdown = function(force) {
+		let shutdown = function() {
 			server.close(function onServerClosed (err){
 				if (err) {
 					let func = {func: "pine.Server.serve"};
 					log.error(func, "server.close error: %s", err);
 					process.exit(1);
 				}else {
-					if(force) {
-						process.exit(0);
-					}
 					//force shutdown
 					setTimeout(function() {
 						log.warn("server force closed after timeout");
@@ -39,11 +36,6 @@ class Server {
 		process.on('SIGTERM', function onSigterm () {
 			log.info('Got SIGTERM, server shutting down');
 			shutdown();
-		});
-
-		process.on('SIGINT', function onSigterm () {
-			log.info('Got SIGINT, server force shutting down');
-			shutdown(true);
 		});
 
 		server.listen(port);
