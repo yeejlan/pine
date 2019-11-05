@@ -22,7 +22,7 @@ class Server {
 				if (err) {
 					let func = {func: "pine.Server.serve"};
 					log.error(func, "server.close error: %s", err);
-					process.exit(1);
+					process.exit(0);
 				}else {
 					//force shutdown
 					setTimeout(function() {
@@ -39,6 +39,11 @@ class Server {
 		});
 
 		server.listen(port);
+		server.on('error', (err) => {
+			let func = {func: "pine.Server.serve"};
+			log.error(func, "server.listen error: %s", err);
+			process.exit(0);
+		});
 		if(server.listening){
 			log.info("Server listen on %s", port);
 		}
