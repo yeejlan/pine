@@ -9,6 +9,14 @@ class Mysql {
 		this.pool = mysql.createPool(url);
 	}
 
+	async selectOne(namedSql, namedParams) {
+		let result = await this.query(namedSql, namedParams);
+		if(!result)	{
+			return result;
+		}
+		return result[0];
+	}
+
 	async select(namedSql, namedParams) {
 		let result = await this.query(namedSql, namedParams);
 		return result;
