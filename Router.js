@@ -125,6 +125,8 @@ class Router {
 				this._end(ctx);
 				return;
 			}else{
+				let func = {func: 'pine.Router.callAction'};
+				log.error(func, "internal server error: %s", e.stack);
 				this._internalServerError(ctx, e);
 				return;
 			}
