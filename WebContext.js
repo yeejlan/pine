@@ -77,6 +77,12 @@ class WebContext {
 	exit() {
 		throw new WebContextExitError();
 	}
+
+	redirect(location) {
+		this.response.writeHead(302, {
+			'Location': location
+		});
+	}
 }
 
 class WebContextExitError extends Error {}
