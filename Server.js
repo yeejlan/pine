@@ -17,13 +17,21 @@ class Server {
 		});
 
 		let app = this.app;
-		let shutdown = function() {
+		let shutdown = function(force) {
 			server.close(function onServerClosed (err){
 				if (err) {
 					let func = {func: "pine.Server.serve"};
 					log.error(func, "server.close error: %s", err);
 					process.exit(1);
 				}else {
+					if(force) {
+						process.exit(0);
+					}
+					//force shutdown
+					setTimeout(function() {
+						log.warn("server force closed after timeout");
+						process.exit(0);
+					}, 15000);
 					app.shutdown();
 				}
 			});
@@ -34,8 +42,8 @@ class Server {
 		});
 
 		process.on('SIGINT', function onSigterm () {
-			log.info('Got SIGINT, server shutting down');
-			shutdown();
+			log.info('Got SIGINT, server force shutting down');
+			shutdown(true);
 		});
 
 		server.listen(port);
