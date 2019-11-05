@@ -73,6 +73,13 @@ class WebContext {
 			});
 		});
 	}
+
+	exit() {
+		throw new WebContextExitError();
+	}
 }
 
+class WebContextExitError extends Error {}
+
 exports.WebContext = WebContext;
+exports.WebContextExitError = WebContextExitError;

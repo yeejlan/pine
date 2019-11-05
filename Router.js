@@ -5,7 +5,7 @@ const querystring = require('querystring');
 const path = require('path');
 const fs = require('fs');
 const log = require('pino')()
-const {WebContext} = require('./WebContext');
+const {WebContext, WebContextExitError} = require('./WebContext');
 
 class Router {
 	constructor(app) {
@@ -121,8 +121,13 @@ class Router {
 			this._end(ctx, out);
 			return;
 		}catch(e){
-			this._internalServerError(ctx, e);
-			return;
+			if(e instanceof WebContextExitError) {
+				this._end(ctx);
+				return;
+			}else{
+				this._internalServerError(ctx, e);
+				return;
+			}
 		}
 	}
 
