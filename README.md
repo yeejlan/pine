@@ -13,7 +13,7 @@ const pine = require('pine');
 let app = new pine.App();
 global.app = app;
 let router = new pine.Router(app);
-let server = new pine.Server(app, router);
+let server = new pine.Server(router);
 
 async function main(){
 
