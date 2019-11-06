@@ -60,7 +60,7 @@ class Router {
 
 		//handle multi part form
 		let result = await this.processForm(request, response);
-		if(result == false) {
+		if(result === false) {
 			return;
 		}
 		let [files,fields] = result;
