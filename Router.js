@@ -3,6 +3,7 @@
 const url = require('url');
 const mime = require('mime');
 const querystring = require('querystring');
+const multiparty = require('multiparty');
 const path = require('path');
 const fs = require('fs');
 const log = require('pino')()
@@ -57,6 +58,16 @@ class Router {
 			params[key] = post[key];
 		}
 
+		//handle multi part form
+		let result = await this.processForm(request, response);
+		if(result == false) {
+			return;
+		}
+		let [files,fields] = result;
+		for(let key in fields) {
+			params[key] = fields[key];
+		}
+
 		//check rewrite rules
 		for(let rewrite of this._routers){
 			let matches = requestUri.match(rewrite.regex);
@@ -99,6 +110,7 @@ class Router {
 		}
 
 		let ctx = new WebContext(this._app, request, response);
+		ctx.files = files;
 		ctx.params = params;
 		ctx.controller = controller;
 		ctx.action = action;
@@ -226,6 +238,24 @@ class Router {
 		ctx.response.end(body);
 	}
 
+	async processForm(request, response){
+		if(request.method == 'POST' && request.headers['content-type'] == 'multipart/form-data') {
+			let form = new multiparty.Form();
+			return new Promise((resolve, reject) => {
+				form.parse(request, function(err, fields, files) {
+					if(err) {
+						response.writeHead(500, {'Content-Type': 'text/plain'});
+						response.end('upload error');
+						resolve(false);
+					}else{
+						resolve([fields, files]);
+					}
+				});
+			});
+		}
+		return [{},{}];
+	}
+
 	async processPost(request, response) {
 		if(request.method == 'POST' && request.headers['content-type'] == 'application/x-www-form-urlencoded') {
 			return new Promise((resolve, reject) => {
@@ -234,7 +264,8 @@ class Router {
 					queryData += data;
 					if(queryData.length > 1e6) {
 						queryData = "";
-						response.writeHead(413, {'Content-Type': 'text/plain'}).end();
+						response.writeHead(413, {'Content-Type': 'text/plain'});
+						response.end();
 						request.connection.destroy();
 						resolve(false);
 					}
