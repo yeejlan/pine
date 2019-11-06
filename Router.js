@@ -48,6 +48,15 @@ class Router {
 			}
 		}
 
+		//handle post form
+		let post = await this.processPost(request, response);
+		if(post === false) {
+			return;
+		}
+		for(let key in post) {
+			params[key] = post[key];
+		}
+
 		//check rewrite rules
 		for(let rewrite of this._routers){
 			let matches = requestUri.match(rewrite.regex);
@@ -215,6 +224,29 @@ class Router {
 			body += `<br />\n<pre>${ex.stack}</pre>`;
 		}
 		ctx.response.end(body);
+	}
+
+	async processPost(request, response) {
+		if(request.method == 'POST' && request.headers['content-type'] == 'application/x-www-form-urlencoded') {
+			return new Promise((resolve, reject) => {
+				let queryData = "";
+				request.on('data', function(data) {
+					queryData += data;
+					if(queryData.length > 1e6) {
+						queryData = "";
+						response.writeHead(413, {'Content-Type': 'text/plain'}).end();
+						request.connection.destroy();
+						resolve(false);
+					}
+				});
+
+				request.on('end', function() {
+					let post = querystring.parse(queryData);
+					resolve(post);
+				});
+			});
+		}
+		return {};
 	}
 
 	async _serveStaticFile(request, response) {
