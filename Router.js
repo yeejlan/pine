@@ -1,6 +1,7 @@
 "use strict";
 
 const url = require('url');
+const mime = require('mime');
 const querystring = require('querystring');
 const path = require('path');
 const fs = require('fs');
@@ -88,6 +89,8 @@ class Router {
 		ctx.params = params;
 		ctx.controller = controller;
 		ctx.action = action;
+
+		ctx.response.setHeader('Content-Type', 'text/html; charset=utf-8');
 		this.callAction(ctx, controller, action);
 	}
 
@@ -216,6 +219,7 @@ class Router {
 		let BASEPATH = "public"
 		let parsedUrl = url.parse(request.url, '');
 		let uri = parsedUrl.pathname;
+		let ctype = mime.getType(uri);
 		let fileLoc = path.join(BASEPATH, uri);
 
 		return new Promise((resolve, reject) => {
@@ -224,6 +228,7 @@ class Router {
 					resolve(fileNotFound);
 				}else{
 					response.statusCode = 200;
+					response.setHeader('Content-Type', ctype);
 					response.write(data);
 					response.end();
 					resolve(true);
