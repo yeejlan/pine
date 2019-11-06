@@ -4,9 +4,9 @@ const http = require('http');
 const log = require('pino')()
 
 class Server {
-	constructor(app, router) {
+	constructor(router) {
 		this.router = router;
-		this.app = app;
+		this.app = router.getApp();
 	}
 
 	serve(port) {

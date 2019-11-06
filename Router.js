@@ -14,6 +14,10 @@ class Router {
 		this._app = app;
 	}
 
+	getApp() {
+		return this._app;
+	}
+
 	setController(controller) {
 		this._controller = controller || {}
 	}
