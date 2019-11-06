@@ -208,7 +208,7 @@ class Router {
 
 		if(ctx.app.getEnv() == ctx.app.DEVELOPMENT) {
 			let ex = err || {};
-			body += ex.stack;
+			body += `<br />\n<pre>${ex.stack}</pre>`;
 		}
 		ctx.response.end(body);
 	}
