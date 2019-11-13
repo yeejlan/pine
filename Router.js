@@ -140,9 +140,9 @@ class Router {
 		try{
 			await ctx.loadSession();
 			instance.ctx = ctx;
-			let before = instance['before'];
+			let before = instance.before;
 			if(before) {
-				await instance['before']();
+				await instance.before();
 			}
 			let out = await instance[actionStr]();
 			await ctx.session.save();
@@ -212,9 +212,10 @@ class Router {
 		if(!clz) {
 			body = msg500;
 		}
+		let instance = null;
+		let actionStr = 'page500Action';
 		if(!body){
-			let instance = new clz();
-			let actionStr = "page500Action";
+			instance = new clz();
 			let func = instance[actionStr];
 			if(!func) {
 				body = msg500;

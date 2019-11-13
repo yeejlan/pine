@@ -63,9 +63,12 @@ class Mysql {
 	createQuery(namedSql, namedParams) {
 		let bindList = [];
 		let match = null;
-		while(match = namedRegex.exec(namedSql)){
+		while(!!(match = namedRegex.exec(namedSql))){
 			let bindName = match[1];
 			let bindValue = namedParams[bindName];
+			if(bindValue === undefined) {
+				bindValue = null;
+			}
 			bindList.push(bindValue);
 		}
 		let sql = namedSql.replace(namedRegex, '?');

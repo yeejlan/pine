@@ -100,7 +100,9 @@ class ResourceLoader {
 			storageName = "redis";
 		}
 		let storageSupported = ['redis'];
-		if(!(storageSupported.indexOf(storageName) > -1)) {
+		if(storageSupported.indexOf(storageName) > -1) {
+			//pass
+		}else{
 			log.warn(`Session storage not supported: "${storageName}", session disabled`);
 			return;
 		}
