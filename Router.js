@@ -197,7 +197,19 @@ class Router {
 			return;
 		}catch(e){
 			this._internalServerError(ctx, e)
-			return;
+		}finally {
+			//delete uploaded files
+			if(ctx.files) {
+				let files = ctx.files;
+				for (let key in files) {
+					if (files.hasOwnProperty(key)){
+						for(let file of files[key]){
+							fs.unlink(file.path, function (err) {});
+						}
+					}
+				}
+			}
+			//delete end
 		}
 	}
 
