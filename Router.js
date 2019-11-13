@@ -193,6 +193,9 @@ class Router {
 		try{
 			instance.ctx = ctx;
 			let out = await instance[actionStr]();
+			if(out instanceof Error) {
+				throw out;
+			}
 			this._end(ctx, out);
 			return;
 		}catch(e){
