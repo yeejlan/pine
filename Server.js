@@ -27,12 +27,6 @@ class Server {
 					app.shutdown();
 				}
 			});
-
-			//force shutdown
-			setTimeout(function() {
-				log.warn("server force closed after timeout");
-				process.exit(0);
-			}, 15000);
 		}
 		process.on('SIGTERM', function onSigterm () {
 			log.info('Got SIGTERM, server shutting down');
