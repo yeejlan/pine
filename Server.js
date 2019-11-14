@@ -18,6 +18,11 @@ class Server {
 
 		let app = this.app;
 		let shutdown = function() {
+			//force shutdown
+			let shutdownTimer = setTimeout(function() {
+				log.warn("server force closed after timeout");
+				process.exit(0);
+			}, 15000);
 			server.close(function onServerClosed (err){
 				if (err) {
 					let func = {func: "pine.Server.serve"};
@@ -25,6 +30,7 @@ class Server {
 					process.exit(0);
 				}else {
 					app.shutdown();
+					clearTimeout(shutdownTimer);
 				}
 			});
 		}
