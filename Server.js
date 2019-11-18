@@ -31,6 +31,7 @@ class Server {
 				}else {
 					app.shutdown();
 					clearTimeout(shutdownTimer);
+					process.exit(0);
 				}
 			});
 		}
