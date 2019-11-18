@@ -41,6 +41,9 @@ class Server {
 		});
 
 		process.on('SIGINT', function onSigterm () {
+			if(app.getEnv() == app.DEVELOPMENT) {
+				process.exit(0);
+			}
 			log.info('Got SIGINT, server shutting down');
 			shutdown();
 		});
