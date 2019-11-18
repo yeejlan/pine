@@ -39,6 +39,11 @@ class Server {
 			shutdown();
 		});
 
+		process.on('SIGINT', function onSigterm () {
+			log.info('Got SIGINT, server shutting down');
+			shutdown();
+		});
+
 		server.listen(port);
 		server.on('error', (err) => {
 			let func = {func: "pine.Server.serve"};
