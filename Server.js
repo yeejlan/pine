@@ -52,7 +52,7 @@ class Server {
 		server.on('error', (err) => {
 			let func = {func: "pine.Server.serve"};
 			log.error(func, "server.listen error: %s", err);
-			process.exit(0);
+			process.exit(1);
 		});
 		if(server.listening){
 			log.info("Server listen on %s", port);
